@@ -3,6 +3,7 @@ from tkinter import scrolledtext
 import time
 from responses import responses
 
+
 class ChatBotGUI:
     def __init__(self, root):
         self.root = root
