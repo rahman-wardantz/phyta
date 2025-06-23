@@ -30,7 +30,7 @@ Ikuti langkah-langkah berikut untuk memulai penggunaan Phyta:
 1. **Clone repositori:**
 
    ```bash
-   git clone https://github.com/username/phyta.git
+   git clone https://github.com/rahman-wardantz/phyta.git
    cd phyta
    ```
 
