@@ -1,6 +1,3 @@
-Berikut adalah contoh file README untuk proyek bot Python kamu, **Phyta**:
-
----
 
 # Phyta
 
