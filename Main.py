@@ -8,7 +8,7 @@ from responses import responses
 class ChatBotGUI:
     def __init__(self, root):
         self.root = root
-        root.title("Phyta Bot")
+        root.title("Pytha Bot")
         
         # Catat waktu mulai percakapan
         self.start_time = time.time()
@@ -31,7 +31,7 @@ class ChatBotGUI:
         self.send_button.pack(side=tk.LEFT)
 
         # Tampilkan pesan sambutan
-        self.insert_text("Phyta: Selamat datang di Phyta bot!")
+        self.insert_text("Pytha: Selamat datang di Pytha bot!")
 
     def insert_text(self, text):
         """Menambahkan teks ke area percakapan."""
@@ -56,9 +56,9 @@ class ChatBotGUI:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         file.write(chunk)
-            self.insert_text(f"Phyta: File berhasil didownload ke {file_path}")
+            self.insert_text(f"Pytha: File berhasil didownload ke {file_path}")
         except requests.exceptions.RequestException as e:
-            self.insert_text(f"Phyta: Terjadi kesalahan saat mendownload file: {e}")
+            self.insert_text(f"Pytha: Terjadi kesalahan saat mendownload file: {e}")
 
     def send_message(self, event=None):
         """Mengambil input dari pengguna, memproses, dan menampilkan respons."""
@@ -72,7 +72,7 @@ class ChatBotGUI:
 
         # Jika input adalah perintah untuk keluar
         if user_input in ['exit', 'quit']:
-            self.insert_text("Phyta: Keluar dari program dalam 3 detik...")
+            self.insert_text("Pytha: Keluar dari program dalam 3 detik...")
             self.root.after(3000, self.quit_chat)
             return
 
@@ -80,16 +80,16 @@ class ChatBotGUI:
         if user_input.startswith("download"):
             parts = user_input.split()
             if len(parts) < 2:
-                self.insert_text("Phyta: Mohon masukkan URL file yang valid setelah perintah download.")
+                self.insert_text("Pytha: Mohon masukkan URL file yang valid setelah perintah download.")
                 return
             # Ambil URL dari input; misalnya, "download https://example.com/file.zip"
             url = parts[1]
             # Gunakan file dialog untuk memilih direktori tujuan
             target_directory = filedialog.askdirectory(title="Pilih Direktori Tujuan")
             if not target_directory:
-                self.insert_text("Phyta: Direktori tujuan tidak dipilih. Proses download dibatalkan.")
+                self.insert_text("Pytha: Direktori tujuan tidak dipilih. Proses download dibatalkan.")
                 return
-            self.insert_text("Phyta: Sedang mendownload file, harap tunggu...")
+            self.insert_text("Pytha: Sedang mendownload file, harap tunggu...")
             self.download_file(url, target_directory)
             return
 
@@ -97,20 +97,20 @@ class ChatBotGUI:
         respon_ditemukan = False
         for keyword, reply in responses.items():
             if keyword in user_input:
-                self.insert_text("Phyta: " + reply)
+                self.insert_text("Pytha: " + reply)
                 respon_ditemukan = True
                 break
 
         # Jika tidak ada kecocokan respons, tampilkan input pengguna
         if not respon_ditemukan:
-            self.insert_text(f"Phyta: Kamu mengatakan '{user_input}'")
+            self.insert_text(f"Pytha: Kamu mengatakan '{user_input}'")
 
     def quit_chat(self):
         """Menghitung waktu percakapan dan keluar dari program."""
         end_time = time.time()
         elapsed_time = int(end_time - self.start_time)
-        self.insert_text(f"Phyta: Total waktu percakapan kamu adalah {elapsed_time} detik.")
-        self.insert_text("Phyta: Sampai jumpa!")
+        self.insert_text(f"Pytha: Total waktu percakapan kamu adalah {elapsed_time} detik.")
+        self.insert_text("Pytha: Sampai jumpa!")
         # Tutup jendela setelah 1 detik untuk memberikan waktu membaca pesan
         self.root.after(1000, self.root.destroy)
 

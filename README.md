@@ -1,7 +1,7 @@
 
-# Phyta
+# Pytha
 
-**Phyta** adalah proyek bot berbasis Python yang dirancang untuk membantu mengotomasi berbagai tugas serta menyediakan antarmuka interaktif bagi pengguna. Proyek ini mengutamakan kemudahan kustomisasi dan perluasan fitur, sehingga cocok untuk berbagai aplikasi, mulai dari asisten pribadi hingga integrasi sistem yang lebih kompleks.
+**Pytha** adalah proyek bot berbasis Python yang dirancang untuk membantu mengotomasi berbagai tugas serta menyediakan antarmuka interaktif bagi pengguna. Proyek ini mengutamakan kemudahan kustomisasi dan perluasan fitur, sehingga cocok untuk berbagai aplikasi, mulai dari asisten pribadi hingga integrasi sistem yang lebih kompleks.
 
 ## Fitur
 
@@ -22,7 +22,7 @@ Pastikan sistem kamu memiliki:
 
 ## Instalasi
 
-Ikuti langkah-langkah berikut untuk memulai penggunaan Phyta:
+Ikuti langkah-langkah berikut untuk memulai penggunaan Pytha:
 
 1. **Clone repositori:**
 
@@ -47,11 +47,11 @@ Ikuti langkah-langkah berikut untuk memulai penggunaan Phyta:
 
 ## Konfigurasi
 
-Sebelum menjalankan Phyta, sesuaikan pengaturan di file konfigurasi (misalnya `config.json`). Berikut contoh format konfigurasinya:
+Sebelum menjalankan Pytha, sesuaikan pengaturan di file konfigurasi (misalnya `config.json`). Berikut contoh format konfigurasinya:
 
 ```json
 {
-  "bot_name": "Phyta",
+  "bot_name": "Pytha",
   "prefix": "!",
   "api_key": "MASUKKAN_API_KEY_DISINI"
 }
@@ -94,7 +94,7 @@ Untuk pertanyaan lebih lanjut, ide perbaikan, atau masukan, kamu dapat:
 
 ---
 
-Selamat menggunakan **Phyta**! Semoga bot ini dapat membantu mempermudah tugas-tugas harian kamu dan menjadi dasar untuk proyek yang lebih menarik di masa depan.
+Selamat menggunakan **Pytha**! Semoga bot ini dapat membantu mempermudah tugas-tugas harian kamu dan menjadi dasar untuk proyek yang lebih menarik di masa depan.
 
 ---
 
