@@ -8,8 +8,18 @@ from responses import responses
 class ChatBotGUI:
     def __init__(self, root):
         self.root = root
+        self.is_dark = False
         root.title("Pytha Bot")
         root.configure(bg="#f5f6fa")
+        # Menu bar
+        menubar = tk.Menu(root)
+        about_menu = tk.Menu(menubar, tearoff=0)
+        about_menu.add_command(label="Tentang Bot", command=self.show_about)
+        menubar.add_cascade(label="Info", menu=about_menu)
+        root.config(menu=menubar)
+        # Mode toggle
+        self.mode_button = tk.Button(root, text="🌙 Mode Gelap", command=self.toggle_mode, bg="#dfe6e9", fg="#222", font=("Segoe UI", 10, "bold"), relief=tk.FLAT)
+        self.mode_button.grid(row=6, column=0, pady=(0, 5), sticky="e")
         # Membuat root window responsive
         root.rowconfigure(2, weight=1)
         root.columnconfigure(0, weight=1)
@@ -39,6 +49,11 @@ class ChatBotGUI:
         self.input_entry.bind("<FocusIn>", self.clear_placeholder)
         self.input_entry.bind("<FocusOut>", self.add_placeholder)
         self.input_entry.bind("<Return>", self.send_message)  # Kirim ketika tekan Enter
+        # Shortcut keyboard
+        root.bind('<Control-s>', lambda e: self.save_chat())
+        root.bind('<Control-l>', lambda e: self.load_chat())
+        root.bind('<Control-c>', lambda e: self.copy_chat())
+        root.bind('<Control-k>', lambda e: self.clear_chat())
         # Tombol untuk mengirim pesan
         self.send_button = tk.Button(self.entry_frame, text="Kirim", command=self.send_message, bg="#00a8ff", fg="white", font=("Segoe UI", 10, "bold"), relief=tk.FLAT)
         self.send_button.pack(side=tk.LEFT)
@@ -145,6 +160,56 @@ class ChatBotGUI:
         else:
             messagebox.showinfo("Info", "Tidak ada chat untuk disalin.")
 
+    def toggle_mode(self):
+        self.is_dark = not self.is_dark
+        if self.is_dark:
+            self.root.configure(bg="#222f3e")
+            self.title_label.configure(bg="#222f3e", fg="#feca57")
+            self.desc_label.configure(bg="#222f3e", fg="#c8d6e5")
+            self.entry_frame.configure(bg="#222f3e")
+            self.feature_frame.configure(bg="#222f3e")
+            self.conversation_area.configure(bg="#222f3e", fg="#f5f6fa", insertbackground="#f5f6fa")
+            self.input_entry.configure(bg="#576574", fg="#f5f6fa", insertbackground="#f5f6fa")
+            self.mode_button.configure(text="☀️ Mode Terang", bg="#222f3e", fg="#feca57")
+            self.send_button.configure(bg="#0984e3", fg="#f5f6fa")
+            self.clear_button.configure(bg="#d63031", fg="#f5f6fa")
+            self.save_button.configure(bg="#00b894", fg="#f5f6fa")
+            self.load_button.configure(bg="#636e72", fg="#f5f6fa")
+            self.copy_button.configure(bg="#fdcb6e", fg="#222f3e")
+            # Update tag warna area chat agar kontras di mode gelap
+            self.conversation_area.tag_configure('user', foreground='#74b9ff', font=("Segoe UI", 11, "bold"))
+            self.conversation_area.tag_configure('bot', foreground='#feca57', font=("Segoe UI", 11))
+            self.conversation_area.tag_configure('separator', foreground='#636e72', font=("Segoe UI", 11, "bold"))
+            self.conversation_area.tag_configure('info', foreground='#c8d6e5', font=("Segoe UI", 11, "italic"))
+            # Placeholder kontras
+            if self.input_entry.get() == "" or self.input_entry.get() == "Ketik pesan di sini...":
+                self.input_entry.config(fg="#b2bec3")
+        else:
+            self.root.configure(bg="#f5f6fa")
+            self.title_label.configure(bg="#f5f6fa", fg="#273c75")
+            self.desc_label.configure(bg="#f5f6fa", fg="#353b48")
+            self.entry_frame.configure(bg="#f5f6fa")
+            self.feature_frame.configure(bg="#f5f6fa")
+            self.conversation_area.configure(bg="#f5f6fa", fg="#222", insertbackground="#222")
+            self.input_entry.configure(bg="#fff", fg="#222", insertbackground="#222")
+            self.mode_button.configure(text="🌙 Mode Gelap", bg="#dfe6e9", fg="#222")
+            self.send_button.configure(bg="#00a8ff", fg="white")
+            self.clear_button.configure(bg="#e84118", fg="white")
+            self.save_button.configure(bg="#44bd32", fg="white")
+            self.load_button.configure(bg="#273c75", fg="white")
+            self.copy_button.configure(bg="#fbc531", fg="#222")
+            # Kembalikan tag warna area chat ke mode terang
+            self.conversation_area.tag_configure('user', foreground='#0097e6', font=("Segoe UI", 11, "bold"))
+            self.conversation_area.tag_configure('bot', foreground='#353b48', font=("Segoe UI", 11))
+            self.conversation_area.tag_configure('separator', foreground='#b2bec3', font=("Segoe UI", 11, "bold"))
+            self.conversation_area.tag_configure('info', foreground='#636e72', font=("Segoe UI", 11, "italic"))
+            # Placeholder kontras
+            if self.input_entry.get() == "" or self.input_entry.get() == "Ketik pesan di sini...":
+                self.input_entry.config(fg="#888")
+
+    def show_about(self):
+        messagebox.showinfo("Tentang Pytha Bot", "Pytha Bot v1.0\nChatbot GUI Python\nDikembangkan oleh rahman-wardantz\nhttps://github.com/rahman-wardantz/phyta")
+
     def send_message(self, event=None):
         """Mengambil input dari pengguna, memproses, dan menampilkan respons."""
         user_input = self.input_entry.get().strip()
@@ -193,3 +258,7 @@ class ChatBotGUI:
         self.insert_text("Pytha: Sampai jumpa!", sender='bot')
         # Tutup jendela setelah 1 detik untuk memberikan waktu membaca pesan
         self.root.after(1000, self.root.destroy)
+
+root = tk.Tk()
+chatbot_gui = ChatBotGUI(root)
+root.mainloop()
