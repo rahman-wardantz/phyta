@@ -79,8 +79,14 @@ class ChatBotGUI:
         # Tombol export PDF
         self.export_pdf_button = tk.Button(self.feature_frame, text="Export PDF", command=self.export_pdf, bg="#6c5ce7", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
         self.export_pdf_button.pack(side=tk.LEFT, padx=5)
+        # Tombol To-Do List
+        self.todo_button = tk.Button(self.feature_frame, text="To-Do List", command=self.show_todo_popup, bg="#00b894", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
+        self.todo_button.pack(side=tk.LEFT, padx=5)
         # Tampilkan pesan sambutan
         self.insert_text("Pytha: Selamat datang di Pytha bot!", sender='bot')
+        # Inisialisasi daftar tugas
+        self.todo_list = []
+        self.default_count = 0
 
     def clear_placeholder(self, event):
         if self.input_entry.get() == "Ketik pesan di sini...":
@@ -241,6 +247,36 @@ class ChatBotGUI:
     def show_about(self):
         messagebox.showinfo("Tentang Pytha Bot", "Pytha Bot v1.0\nChatbot GUI Python\nDikembangkan oleh rahman-wardantz\nhttps://github.com/rahman-wardantz/phyta")
 
+    def show_todo_popup(self):
+        popup = tk.Toplevel(self.root)
+        popup.title("To-Do List")
+        popup.geometry("350x350")
+        popup.configure(bg="#f5f6fa" if not self.is_dark else "#222f3e")
+        # Listbox untuk daftar tugas
+        listbox = tk.Listbox(popup, font=("Segoe UI", 11), width=35, height=12)
+        listbox.pack(pady=10)
+        for t in self.todo_list:
+            listbox.insert(tk.END, t)
+        # Entry tambah tugas
+        entry = tk.Entry(popup, font=("Segoe UI", 11), width=25)
+        entry.pack(side=tk.LEFT, padx=(10,0), pady=5)
+        def add_task():
+            task = entry.get().strip()
+            if task:
+                self.todo_list.append(task)
+                listbox.insert(tk.END, task)
+                entry.delete(0, tk.END)
+        add_btn = tk.Button(popup, text="+", command=add_task, bg="#44bd32", fg="white", font=("Segoe UI", 10, "bold"))
+        add_btn.pack(side=tk.LEFT, padx=5, pady=5)
+        def del_task():
+            sel = listbox.curselection()
+            if sel:
+                idx = sel[0]
+                self.todo_list.pop(idx)
+                listbox.delete(idx)
+        del_btn = tk.Button(popup, text="Hapus", command=del_task, bg="#e84118", fg="white", font=("Segoe UI", 10))
+        del_btn.pack(side=tk.LEFT, padx=5, pady=5)
+
     def send_message(self, event=None):
         """Mengambil input dari pengguna, memproses, dan menampilkan respons."""
         user_input = self.input_entry.get().strip()
@@ -250,6 +286,43 @@ class ChatBotGUI:
         self.insert_text("Kamu: " + user_input, sender='user')
         self.input_entry.delete(0, tk.END)
         self.input_entry.config(fg="#222")
+        # To-Do List praktis
+        lower_input = user_input.lower()
+        if lower_input == 'tugas':
+            if not self.todo_list:
+                self.insert_text("Pytha: Daftar tugas kosong.", sender='bot')
+            else:
+                daftar = '\n'.join([f"{i+1}. {t}" for i, t in enumerate(self.todo_list)])
+                self.insert_text(f"Pytha: Daftar tugas saat ini:\n{daftar}", sender='bot')
+            return
+        if lower_input.startswith('+ '):
+            task = user_input[2:].strip()
+            if task:
+                self.todo_list.append(task)
+                self.insert_text(f"Pytha: Tugas '{task}' berhasil ditambahkan ke daftar.", sender='bot')
+            else:
+                self.insert_text("Pytha: Mohon masukkan deskripsi tugas setelah '+ '", sender='bot')
+            return
+        if lower_input.startswith('- '):
+            param = user_input[2:].strip()
+            if param.isdigit():
+                idx = int(param) - 1
+                if 0 <= idx < len(self.todo_list):
+                    removed = self.todo_list.pop(idx)
+                    self.insert_text(f"Pytha: Tugas '{removed}' berhasil dihapus.", sender='bot')
+                else:
+                    self.insert_text("Pytha: Nomor tugas tidak valid.", sender='bot')
+            else:
+                found = False
+                for i, t in enumerate(self.todo_list):
+                    if param.lower() in t.lower():
+                        removed = self.todo_list.pop(i)
+                        self.insert_text(f"Pytha: Tugas '{removed}' berhasil dihapus.", sender='bot')
+                        found = True
+                        break
+                if not found:
+                    self.insert_text("Pytha: Tugas tidak ditemukan.", sender='bot')
+            return
         # Jika input adalah perintah untuk keluar
         if user_input.lower() in ['exit', 'quit']:
             self.insert_text("Pytha: Keluar dari program dalam 3 detik...", sender='bot')
@@ -275,11 +348,27 @@ class ChatBotGUI:
             if keyword in user_input.lower() and keyword != "default":
                 self.insert_text("Pytha: " + reply, sender='bot')
                 respon_ditemukan = True
+                self.default_count = 0  # reset jika ada respons
                 break
-        # Jika tidak ada kecocokan respons, tampilkan input pengguna
         if not respon_ditemukan:
             default_reply = responses.get("default", "Maaf, saya kurang paham. Bisa coba diutarakan dengan kata lain?")
             self.insert_text(f"Pytha: {default_reply}", sender='bot')
+            self.default_count += 1
+            if self.default_count >= 3:
+                self.default_count = 0
+                fitur = (
+                    "\nFitur Pytha Bot:\n"
+                    "- To-Do List: tambah tugas: <isi tugas> | lihat tugas | hapus tugas: <nomor/isi>\n"
+                    "- Simpan chat: klik tombol Simpan Chat\n"
+                    "- Buka chat: klik tombol Buka Chat\n"
+                    "- Copy chat: klik tombol Copy Chat\n"
+                    "- Export PDF: klik tombol Export PDF\n"
+                    "- Download file: download <url>\n"
+                    "- Mode gelap/terang: klik tombol 🌙/☀️\n"
+                    "- Keluar: exit atau quit\n"
+                    "Contoh: tambah tugas: Beli susu\n"
+                )
+                self.insert_text(f"Pytha: Berikut fitur yang bisa kamu gunakan:{fitur}", sender='bot')
 
     def quit_chat(self):
         """Menghitung waktu percakapan dan keluar dari program."""
