@@ -3,6 +3,10 @@ from tkinter import scrolledtext, filedialog, messagebox
 import time
 import requests
 import os
+from fpdf import FPDF
+import sys
+if sys.platform == 'win32':
+    import winsound
 from responses import responses
 
 class ChatBotGUI:
@@ -72,6 +76,9 @@ class ChatBotGUI:
         # Tombol copy chat
         self.copy_button = tk.Button(self.feature_frame, text="Copy Chat", command=self.copy_chat, bg="#fbc531", fg="#222", font=("Segoe UI", 10), relief=tk.FLAT)
         self.copy_button.pack(side=tk.LEFT, padx=5)
+        # Tombol export PDF
+        self.export_pdf_button = tk.Button(self.feature_frame, text="Export PDF", command=self.export_pdf, bg="#6c5ce7", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
+        self.export_pdf_button.pack(side=tk.LEFT, padx=5)
         # Tampilkan pesan sambutan
         self.insert_text("Pytha: Selamat datang di Pytha bot!", sender='bot')
 
@@ -94,13 +101,37 @@ class ChatBotGUI:
         self.insert_text("••••••••••••••••••••••••••••••••••••••••", sender='separator')
         self.insert_text("\nChat telah dibersihkan. Mulai percakapan baru!\n", sender='info')
 
+    def export_pdf(self):
+        chat_content = self.conversation_area.get(1.0, tk.END).strip()
+        if not chat_content:
+            messagebox.showinfo("Info", "Tidak ada chat untuk diekspor.")
+            return
+        file_path = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("PDF Files", "*.pdf")], title="Export Chat ke PDF")
+        if file_path:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+            for line in chat_content.splitlines():
+                pdf.cell(0, 10, txt=line, ln=1)
+            pdf.output(file_path)
+            messagebox.showinfo("Sukses", f"Chat berhasil diekspor ke {file_path}")
+
+    def play_notification(self):
+        try:
+            if sys.platform == 'win32':
+                winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        except Exception:
+            pass
+
     def insert_text(self, text, sender=None):
         """Menambahkan teks ke area percakapan dengan warna berbeda."""
         self.conversation_area.configure(state='normal')
+        timestamp = time.strftime("[%H:%M:%S] ")
         if sender == 'user':
-            self.conversation_area.insert(tk.END, text + "\n", 'user')
+            self.conversation_area.insert(tk.END, timestamp + text + "\n", 'user')
         elif sender == 'bot':
-            self.conversation_area.insert(tk.END, text + "\n", 'bot')
+            self.conversation_area.insert(tk.END, timestamp + text + "\n", 'bot')
+            self.play_notification()
         elif sender == 'separator':
             self.conversation_area.insert(tk.END, text + "\n", 'separator')
         elif sender == 'info':
