@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import scrolledtext, filedialog
+from tkinter import scrolledtext, filedialog, messagebox
 import time
 import requests
 import os
@@ -45,6 +45,18 @@ class ChatBotGUI:
         # Tombol untuk membersihkan chat
         self.clear_button = tk.Button(root, text="Bersihkan Chat", command=self.clear_chat, bg="#e84118", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
         self.clear_button.grid(row=4, column=0, pady=(0, 10), sticky="ew")
+        # Frame untuk tombol fitur tambahan
+        self.feature_frame = tk.Frame(root, bg="#f5f6fa")
+        self.feature_frame.grid(row=5, column=0, pady=(0, 10), sticky="ew")
+        # Tombol simpan chat
+        self.save_button = tk.Button(self.feature_frame, text="Simpan Chat", command=self.save_chat, bg="#44bd32", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
+        self.save_button.pack(side=tk.LEFT, padx=5)
+        # Tombol buka chat
+        self.load_button = tk.Button(self.feature_frame, text="Buka Chat", command=self.load_chat, bg="#273c75", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
+        self.load_button.pack(side=tk.LEFT, padx=5)
+        # Tombol copy chat
+        self.copy_button = tk.Button(self.feature_frame, text="Copy Chat", command=self.copy_chat, bg="#fbc531", fg="#222", font=("Segoe UI", 10), relief=tk.FLAT)
+        self.copy_button.pack(side=tk.LEFT, padx=5)
         # Tampilkan pesan sambutan
         self.insert_text("Pytha: Selamat datang di Pytha bot!", sender='bot')
 
@@ -102,6 +114,37 @@ class ChatBotGUI:
         except requests.exceptions.RequestException as e:
             self.insert_text(f"Pytha: Terjadi kesalahan saat mendownload file: {e}", sender='bot')
 
+    def save_chat(self):
+        chat_content = self.conversation_area.get(1.0, tk.END).strip()
+        if not chat_content:
+            messagebox.showinfo("Info", "Tidak ada chat untuk disimpan.")
+            return
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")], title="Simpan Riwayat Chat")
+        if file_path:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(chat_content)
+            messagebox.showinfo("Sukses", f"Chat berhasil disimpan di {file_path}")
+
+    def load_chat(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")], title="Buka Riwayat Chat")
+        if file_path:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                chat_content = f.read()
+            self.conversation_area.configure(state='normal')
+            self.conversation_area.delete(1.0, tk.END)
+            self.conversation_area.insert(tk.END, chat_content)
+            self.conversation_area.configure(state='disabled')
+            self.insert_text("\n[Riwayat chat dimuat]", sender='info')
+
+    def copy_chat(self):
+        chat_content = self.conversation_area.get(1.0, tk.END).strip()
+        if chat_content:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(chat_content)
+            messagebox.showinfo("Disalin", "Seluruh chat telah disalin ke clipboard.")
+        else:
+            messagebox.showinfo("Info", "Tidak ada chat untuk disalin.")
+
     def send_message(self, event=None):
         """Mengambil input dari pengguna, memproses, dan menampilkan respons."""
         user_input = self.input_entry.get().strip()
@@ -133,13 +176,14 @@ class ChatBotGUI:
         # Cari respons berdasarkan kata kunci dari dictionary responses
         respon_ditemukan = False
         for keyword, reply in responses.items():
-            if keyword in user_input.lower():
+            if keyword in user_input.lower() and keyword != "default":
                 self.insert_text("Pytha: " + reply, sender='bot')
                 respon_ditemukan = True
                 break
         # Jika tidak ada kecocokan respons, tampilkan input pengguna
         if not respon_ditemukan:
-            self.insert_text(f"Pytha: Kamu mengatakan '{user_input}'", sender='bot')
+            default_reply = responses.get("default", "Maaf, saya kurang paham. Bisa coba diutarakan dengan kata lain?")
+            self.insert_text(f"Pytha: {default_reply}", sender='bot')
 
     def quit_chat(self):
         """Menghitung waktu percakapan dan keluar dari program."""
