@@ -47,3 +47,26 @@ def copy_chat(conversation_area, root):
         messagebox.showinfo("Disalin", "Seluruh chat telah disalin ke clipboard.")
     else:
         messagebox.showinfo("Info", "Tidak ada chat untuk disalin.")
+
+def show_help(root=None):
+    help_text = (
+        "Panduan Penggunaan Pytha Bot:\n"
+        "- Ketik pesan apapun untuk mendapatkan respons.\n"
+        "- To-Do List: \n"
+        "    - 'tugas' untuk melihat daftar tugas\n"
+        "    - '+ <tugas>' untuk menambah tugas\n"
+        "    - '- <nomor/teks>' untuk menghapus tugas\n"
+        "- Fitur Windows: \n"
+        "    - 'buka notepad', 'buka kalkulator', 'buka explorer', dll\n"
+        "- Download file: \n"
+        "    - 'download <url>'\n"
+        "- Fitur chat: \n"
+        "    - Simpan, buka, copy, export PDF chat dari menu fitur\n"
+        "- Mode gelap/terang: klik tombol di pojok kanan atas\n"
+        "- Ketik 'help' untuk menampilkan panduan ini\n"
+        "- Ketik 'exit' atau 'quit' untuk keluar\n"
+    )
+    if root:
+        from tkinter import messagebox
+        messagebox.showinfo("Panduan Pytha Bot", help_text)
+    return help_text

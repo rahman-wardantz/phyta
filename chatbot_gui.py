@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import scrolledtext, filedialog, messagebox
 import time
 import requests
-from chat_io import export_pdf, save_chat, load_chat, copy_chat
+from chat_io import export_pdf, save_chat, load_chat, copy_chat, show_help
 from notifier import play_notification
 from ui_config import LIGHT_THEME, DARK_THEME, FONT_MAIN, FONT_BOLD, FONT_TITLE, FONT_DESC
 from windows_commands import handle_windows_command
@@ -69,21 +69,16 @@ class ChatBotGUI:
         # Frame untuk tombol fitur tambahan
         self.feature_frame = tk.Frame(root, bg="#f5f6fa")
         self.feature_frame.grid(row=5, column=0, pady=(0, 10), sticky="ew")
-        # Tombol simpan chat
-        self.save_button = tk.Button(self.feature_frame, text="Simpan Chat", command=self.save_chat, bg="#44bd32", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
-        self.save_button.pack(side=tk.LEFT, padx=5)
-        # Tombol buka chat
-        self.load_button = tk.Button(self.feature_frame, text="Buka Chat", command=self.load_chat, bg="#273c75", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
-        self.load_button.pack(side=tk.LEFT, padx=5)
-        # Tombol copy chat
-        self.copy_button = tk.Button(self.feature_frame, text="Copy Chat", command=self.copy_chat, bg="#fbc531", fg="#222", font=("Segoe UI", 10), relief=tk.FLAT)
-        self.copy_button.pack(side=tk.LEFT, padx=5)
-        # Tombol export PDF
-        self.export_pdf_button = tk.Button(self.feature_frame, text="Export PDF", command=self.export_pdf, bg="#6c5ce7", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
-        self.export_pdf_button.pack(side=tk.LEFT, padx=5)
-        # Tombol To-Do List
-        self.todo_button = tk.Button(self.feature_frame, text="To-Do List", command=self.show_todo_popup, bg="#00b894", fg="white", font=("Segoe UI", 10), relief=tk.FLAT)
-        self.todo_button.pack(side=tk.LEFT, padx=5)
+        # Tombol fitur utama (dropdown)
+        self.feature_menu_button = tk.Menubutton(self.feature_frame, text="Fitur Lainnya", bg="#636e72", fg="white", font=("Segoe UI", 10, "bold"), relief=tk.FLAT)
+        self.feature_menu = tk.Menu(self.feature_menu_button, tearoff=0)
+        self.feature_menu.add_command(label="Simpan Chat", command=self.save_chat)
+        self.feature_menu.add_command(label="Buka Chat", command=self.load_chat)
+        self.feature_menu.add_command(label="Copy Chat", command=self.copy_chat)
+        self.feature_menu.add_command(label="Export PDF", command=self.export_pdf)
+        self.feature_menu.add_command(label="To-Do List", command=self.show_todo_popup)
+        self.feature_menu_button.config(menu=self.feature_menu)
+        self.feature_menu_button.pack(side=tk.LEFT, padx=5)
         # Tampilkan pesan sambutan
         self.insert_text("Pytha: Selamat datang di Pytha bot!", sender='bot')
         # Inisialisasi daftar tugas
@@ -286,6 +281,9 @@ class ChatBotGUI:
         self.input_entry.delete(0, tk.END)
         self.input_entry.config(fg="#222")
         lower_input = user_input.lower()
+        if lower_input == 'help':
+            show_help(self.root)
+            return
         # Cek perintah Windows (pindah ke modul terpisah)
         handled, message = handle_windows_command(lower_input, user_input, self.root)
         if handled:
